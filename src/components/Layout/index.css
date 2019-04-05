@@ -1,0 +1,11 @@
+.my-component {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+    width: 100%;
+}
+.my-component > * {
+    margin-bottom: 10px;
+    align-self: center;
+}

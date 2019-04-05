@@ -1,0 +1,24 @@
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.header > a {
+    position: relative;
+    align-self: center;
+    width: 30%;
+    padding: 10px;
+    background-color: blue;
+}
+.header > a > span {
+    display: none;
+}
+.header > a.active {
+    background-color: deeppink;
+}
+.header > a.active span {
+    display: block;
+    position: absolute;
+    left: -20px;
+}
