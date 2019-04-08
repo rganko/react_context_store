@@ -6,7 +6,3 @@ export default () => combineReducers({
   count: countReducer,
   colors: colorsReducer,
 })
-
-export function getInitialState(reducer) {
-  return reducer(undefined, {});
-}

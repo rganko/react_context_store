@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import isEmpty from 'lodash/isEmpty';
 import isFunction from 'lodash/isFunction';
 
-import createRootReducer, { getInitialState } from './reducers';
+import createRootReducer from './reducers';
 
 const StoreContext = React.createContext();
 
@@ -34,6 +34,8 @@ const connect = (mapStateToProps, mapDispatchToProps) => WrappedComponent => {
     )
   }
 };
+
+const getInitialState = (reducer) => reducer(undefined, {});
 
 const configureStore = (preLoadedState = {}) => {
   // combine preLoadedState and reducers
@@ -77,7 +79,7 @@ const combineReducers = (reducers) => {
 };
 
 export default function Provider({ store, children }){
-  let [state, dispatch] = React.useReducer(store.reducer, store.initialState);
+  let [state, dispatch] = useReducer(store.reducer, store.initialState);
   let value = { state, dispatch };
 
   return (
