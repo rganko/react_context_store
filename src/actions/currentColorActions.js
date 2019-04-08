@@ -1,7 +1,7 @@
 const colorData = ['aqua', 'orange', 'yellow', 'blue', 'chartreuse', 'crimson'];
 
 export function fetchColors() {
-  return async dispatch => {
+  return async (dispatch/*, getState*/) => {
     dispatch({ type: 'FETCH_COLORS_PENDING' });
     try {
       const colors = await new Promise(res => setTimeout(() => res({data: colorData}), 1000));

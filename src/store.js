@@ -6,16 +6,15 @@ import createRootReducer, { getInitialState } from './reducers';
 const StoreContext = React.createContext();
 
 const getMapStateToProps = mapDispatchToProps => (state, props) => (isFunction(mapDispatchToProps)
-  ? mapDispatchToProps(state, props) : {})
-;
+  ? mapDispatchToProps(state, props) : {});
 
-const dispatchHandler = dispatch => {
+const dispatchHandler = (dispatch, state) => {
   return dispatchedElement => isFunction(dispatchedElement)
-    ? dispatchedElement(dispatch) : dispatch(dispatchedElement);
+    ? dispatchedElement(dispatch, () => state) : dispatch(dispatchedElement);
 };
 
-const getMapDispatchToProps = mapDispatchToProps => dispatch => ({
-  ...(isFunction(mapDispatchToProps) ? mapDispatchToProps(dispatchHandler(dispatch)) : {}),
+const getMapDispatchToProps = mapDispatchToProps => (dispatch, state) => ({
+  ...(isFunction(mapDispatchToProps) ? mapDispatchToProps(dispatchHandler(dispatch, state)) : {}),
   dispatch,
 });
 
@@ -27,7 +26,7 @@ const connect = (mapStateToProps, mapDispatchToProps) => WrappedComponent => {
           <WrappedComponent
             { ...getMapStateToProps(mapStateToProps)(state, props) }
             { ...props }
-            { ...getMapDispatchToProps(mapDispatchToProps)(dispatch) }
+            { ...getMapDispatchToProps(mapDispatchToProps)(dispatch, state) }
           />
         )}
       </StoreContext.Consumer>
