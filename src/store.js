@@ -1,5 +1,6 @@
 import React, { useReducer } from 'react';
 import isEmpty from 'lodash/isEmpty';
+import isPlainObject from 'lodash/isPlainObject';
 import isFunction from 'lodash/isFunction';
 
 import createRootReducer from './reducers';
@@ -14,10 +15,34 @@ const dispatchHandler = (dispatch, state) => {
     ? dispatchedElement(dispatch, () => state) : dispatch(dispatchedElement);
 };
 
-const getMapDispatchToProps = mapDispatchToProps => (dispatch, state) => ({
-  ...(isFunction(mapDispatchToProps) ? mapDispatchToProps(dispatchHandler(dispatch, state)) : {}),
-  dispatch,
-});
+const getMapDispatchToProps = mapDispatchToProps => (dispatch, state) => {
+  if (isFunction(mapDispatchToProps)) {
+    return {
+      ...mapDispatchToProps(dispatchHandler(dispatch, state)),
+      dispatch
+    }
+  }
+
+  if (isPlainObject(mapDispatchToProps)) {
+    const handler = {
+      get: function(obj, prop) {
+        return (...args) => {
+          isFunction(obj[prop](...args))
+              ? obj[prop](...args)(dispatch, () => state)
+              : dispatch(obj[prop](...args));
+        }
+      },
+    };
+    return ({
+      ...(new Proxy(mapDispatchToProps, handler)),
+      dispatch
+    })
+  }
+
+  return {
+    dispatch,
+  };
+};
 
 const connect = (mapStateToProps, mapDispatchToProps) => WrappedComponent => {
   return function(props) {
@@ -59,7 +84,7 @@ const stateLogger = (action, newState) => {
   } catch(e) {}
 };
 
-const combineReducers = (reducers) => {
+const combineReducers = reducers => {
   return (state = {}, action) => {
     const newState = Object.keys(reducers).reduce(
       (nextState, key) => {
@@ -80,7 +105,7 @@ const combineReducers = (reducers) => {
 
 export default function Provider({ store, children }){
   let [state, dispatch] = useReducer(store.reducer, store.initialState);
-  let value = { state, dispatch };
+  let value = { state, dispatch: dispatchHandler(dispatch, state) };
 
   return (
     <StoreContext.Provider value={value}>
@@ -89,4 +114,7 @@ export default function Provider({ store, children }){
   )
 };
 
-export { connect, configureStore, combineReducers }
+const compose = (...funcs) =>
+    funcs.reduce((acc, currentValue) => (...args) => acc(currentValue(...args)), arg => arg);
+
+export { connect, configureStore, combineReducers, compose };

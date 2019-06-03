@@ -3,6 +3,7 @@ const initialState = {
   items: [],
   status: null,
   error: null,
+  tmp: 0,
 };
 
 export default function reducer(state = initialState, action) {

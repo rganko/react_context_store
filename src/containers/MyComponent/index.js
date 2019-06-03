@@ -5,11 +5,15 @@ import { useFormInput } from '../../hooks/formInput';
 import Layout from '../../components/Layout';
 import LoadingBar from '../../components/LoadingBar';
 import { incrementCount } from '../../actions/countActions';
-import { fetchColors } from '../../actions/currentColorActions';
+import { fetchColors, setColor } from '../../actions/currentColorActions';
 import './index.css';
 
 function MyComponent(props) {
   const { setValue: setColor, ...color} = useFormInput(props.colors.currentColor);
+
+  useEffect(() => {
+    console.log('props.getColors', props.getColors);
+  });
 
   useEffect(() => {
     setColor(props.colors.currentColor)
@@ -30,6 +34,7 @@ function MyComponent(props) {
         <button onClick={props.reset}>RESET</button>
         <input {...color} />
         <button onClick={() => props.setColor(color.value)}>SET_COLOR</button>
+        <button onClick={props.setOrange}>SET_COLOR: ORANGE</button>
       </div>
       <div className="colors-container">
         <LoadingBar isLoading={props.colors.status === 'PENDING'} />
@@ -58,6 +63,7 @@ const mapDispatchToProps = dispatch => {
     decrement: () => dispatch({ type: 'DECREMENT' }),
     reset: () => dispatch({ type: 'RESET' }),
     setColor: color => dispatch({ type: 'SET_COLOR', payload: color }),
+    setOrange: () => dispatch(setColor('orange')),
     getColors: () => dispatch(fetchColors())
   }
 };

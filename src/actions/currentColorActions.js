@@ -12,3 +12,13 @@ export function fetchColors() {
     }
   };
 }
+
+export function setColor(color) {
+  return { type: 'SET_COLOR', payload: color }
+}
+
+export function setRed() {
+  return dispatch => {
+    dispatch(setColor('red'));
+  }
+}
